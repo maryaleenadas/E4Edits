@@ -1,121 +1,120 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useState, useEffect } from 'react'
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  const [videoUrl, setVideoUrl] = useState("");
+   const [fileName, setFileName] = useState("");
+
+    function handleVideoUpload(event) {
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    if (!file.type.startsWith("video/")) {
+      alert("Please select a video file.");
+      event.target.value = "";
+      return;
+    }
+
+    const temporaryUrl = URL.createObjectURL(file);
+
+    setVideoUrl(temporaryUrl);
+    setFileName(file.name);
+  }
+ useEffect(() => {
+    return () => {
+      if (videoUrl) {
+        URL.revokeObjectURL(videoUrl);
+      }
+    };
+  }, [videoUrl]);
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div>
+     <main className='app'>
+       <header className='topbar'>
+
+        <div className='brand'>
+          <span className='brandicon'>▶</span>
+          <h1>e4Edits</h1>
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
+
+        <span className='projectname'>untitled project</span>
+         
+
+       </header>
+
+       <section className='workspace'>
+        <aside className="panel media-panel">
+          <h2>Media</h2>
+          <p className="muted">
+            Import a video to get started.
           </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+           <label className="upload-button">
+            + Import video
+            <input type='file' accept='video/*' onChange={handleVideoUpload}></input>
+          </label>
 
-      <div className="ticks"></div>
+          {fileName && (
+            <div className="media-item">
+              <span>🎬</span>
+              <span className="file-name">
+                {fileName}
+              </span>
+            </div>
+          )}
+        </aside>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+         <section className="panel preview-panel">
+          <div className="panel-heading">
+            <h2>Preview</h2>
+            <span className="muted">Original video</span>
+          </div>
+           <div className="video-stage">
+            {videoUrl ? (
+              <video
+                key={videoUrl}
+                src={videoUrl}
+                controls
+                playsInline
+                className="video-player"
+              >
+                Your browser cannot play this video.
+              </video>
+            ) : (<div className="empty-preview">
+                <span className="play-icon">▶</span>
+                <p>Your video will appear here</p>
+                <p className="muted">
+                  Choose a video from your computer.
+                </p>
+              </div>
+            )}
+          </div>
+          </section>
+       </section>
+
+        <section className="panel timeline-panel">
+        <div className="panel-heading">
+          <h2>Timeline</h2>
+          <span className="muted">
+            {videoUrl ? "1 video imported" : "No clips yet"}
+          </span>
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
+        <div className="timeline-track">
+          {videoUrl ? (
+            <div className="clip-block">
+              🎬 {fileName}
+            </div>
+          ) : (
+            <p className="muted">
+              Import a video to see it here.
+            </p>
+          )}
         </div>
       </section>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+     </main>
+    </div>
   )
 }
 
